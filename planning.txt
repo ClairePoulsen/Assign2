@@ -1,0 +1,23 @@
+Stephen's Rubric
+
+F - not enough                              B - good
+                                                - all of C
+D - barely enough                               - "Food" timer that creates "poop" over time
+    - "count down" timer exists + works         - can "clean up" "poop" by pressing on it
+    - some emoji displayed
+    - min 2 screens                         A - awesome
+                                                - all of B
+C - enough                                      - multiple states interactions
+    - all of D                                  - some "wow" factor
+    - emoji + timer interact
+    - unhappy --                            A+ - Stephen would pay $0.99
+        - happy ++
+
+Emoji Planning                              Timers to Play With
+                                            - Happiness => Pet
+=D      (Rotate 90deg)                      - Hunger => Feed
+=)      (Rotate 90deg)                      - Boredom => Play
+=|      (Rotate 90deg)
+=(      (Rotate 90deg)
+D=      (Rotate -90deg/270deg)
+DX      (Rotate -90deg/270deg)
