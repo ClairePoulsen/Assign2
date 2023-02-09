@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native'; // useNavigation for navigating from component
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -51,6 +51,10 @@ export default function App() {
 const Landing = ({navigation}) => {
 
   const [name, onChangeName] = React.useState('');
+  const [diffMod, changeDiff] = React.useState(10); // Let the default difficulty be Easy
+  const [color1, changeColor1] = React.useState('lightgrey');
+  const [color2, changeColor2] = React.useState('lightgrey');
+  const [color3, changeColor3] = React.useState('lightgrey');
 
   return (
     <Pressable style={styles.container} onPress={dismissKeyboard}>
@@ -69,31 +73,57 @@ const Landing = ({navigation}) => {
         />
       </View>
       <View style={styles.buttonRow}>
+      <Pressable 
+          style={[{borderColor: color1}, styles.difficulty]}
+          onPress={() => {changeDiff(10),
+          changeColor1('black'),
+          changeColor2('lightgrey'),
+          changeColor3('lightgrey')}}>
+          <Text style={styles.colorText}>Easy</Text>
+        </Pressable>
+        <Pressable 
+          style={[{borderColor: color2}, styles.difficulty]}
+          onPress={() => {changeDiff(5),
+            changeColor1('lightgrey'),
+            changeColor2('black'),
+            changeColor3('lightgrey')}}>
+          <Text style={styles.colorText}>Medium</Text>
+        </Pressable>
+        <Pressable 
+          style={[{borderColor: color3}, styles.difficulty]}
+          onPress={() => {changeDiff(1),
+            changeColor1('lightgrey'),
+            changeColor2('lightgrey'),
+            changeColor3('black')}}>
+          <Text style={styles.colorText}>Hard</Text>
+        </Pressable>
+      </View>
+      <View style={styles.buttonRow}>
         <Pressable 
           style={styles.greenPress}
           onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'green'}
+          {name: name, color: 'green', diffMod: diffMod}
           );}}>
           <Text style={styles.colorText}>Green</Text>
         </Pressable>
         <Pressable
           style={styles.bluePress}
           onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'blue'}
+          {name: name, color: 'blue', diffMod: diffMod}
           );}}>
           <Text style={styles.colorText}>Blue</Text>
         </Pressable>
         <Pressable
           style={styles.redPress}
           onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'red'}
+          {name: name, color: 'red', diffMod: diffMod}
           );}}>
           <Text style={styles.colorText}>Red</Text>
         </Pressable>
         <Pressable
           style={styles.purplePress}
           onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'purple'}
+          {name: name, color: 'purple', diffMod: diffMod}
           );}}>
           <Text style={styles.colorText}>Purple</Text>
         </Pressable>
@@ -108,13 +138,13 @@ const Emojigotchi = ({navigation, route}) => {
   return (
     <View style={styles.container}>
       {/* navigation passed as a prop so that the component can render a navigate function */}
-      <Emoticon color={route.params.color} name={route.params.name} navigation={navigation}/>
+      <Emoticon color={route.params.color} name={route.params.name} diffMod={route.params.diffMod} navigation={navigation}/>
     </View>
   )
 }
 
 // Funeral page
-const Funeral = ({navigation, route}) => {
+const Funeral = ({route}) => {
 
   let grave = {uri: 'https://media.istockphoto.com/id/998217018/vector/stone-tombstone-rip-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=tJsLN4L86RTV8_Tsqe9fYiThH4PK01dZlTM2At0cXDg='};
 
@@ -133,6 +163,7 @@ class Emoticon extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      diffMod: props.diffMod,
       emotiName: props.name,
       color: props.color,
       emote: '=D',
@@ -224,9 +255,9 @@ class Emoticon extends Component {
       <View style={styles.statusArea}>
         {(!this.state.death) ? // If the emoji is still alive, show the status bars
         <>
-        <StatusBar color={'dodgerblue'} dispText={'Happiness'} btnText={'Pet'} callback={this.setPercA} />
-        <StatusBar color={'limegreen'} dispText={'Hunger'} btnText={'Feed'} callback={this.setPercB} />
-        <StatusBar color={'plum'} dispText={'Fun'} btnText={'Play'} callback={this.setPercC} />
+        <StatusBar color={'dodgerblue'} dispText={'Happiness'} btnText={'Pet'} diffMod={this.state.diffMod} callback={this.setPercA} />
+        <StatusBar color={'limegreen'} dispText={'Hunger'} btnText={'Feed'} diffMod={this.state.diffMod} callback={this.setPercB} />
+        <StatusBar color={'plum'} dispText={'Fun'} btnText={'Play'} diffMod={this.state.diffMod} callback={this.setPercC} />
         </> : // if the emoji has died, proceed to the funeral
         <Pressable style={styles.funeralBtn}
           onPress={() => {navigation.navigate('Funeral',
@@ -250,8 +281,9 @@ class StatusBar extends Component {
     let dispText = props.dispText;
     let btnText = props.btnText;
     this.state = {
-      timeRemaining: 50,
-      percentage: (50/50)*100,
+      difficulty: (props.diffMod * 5),
+      timeRemaining: (props.diffMod * 5),
+      percentage: 100,
       alarmTime: (0),
       bgcolor: bgcolor,
       dispText: dispText,
@@ -278,7 +310,7 @@ class StatusBar extends Component {
       // Keep changes if the new time is > 0
       this.setState({
         timeRemaining: newTime,
-        percentage: (newTime/50)*100,
+        percentage: ((newTime/this.state.difficulty)*100),
       })
     } 
     this.state.passTime(this.state.percentage);
@@ -290,14 +322,14 @@ class StatusBar extends Component {
   }
   
   increaseTime = () => {
-    let extra = this.state.timeRemaining + 10;
-    if(this.state.timeRemaining <= 40) {
+    let extra = this.state.timeRemaining + (this.state.difficulty/5);
+    if(this.state.timeRemaining <= ((this.state.difficulty/5)*4)) {
       this.setState({
         timeRemaining: extra,
       })
     } else {
       this.setState({ // only increase to 100%
-        timeRemaining: 51, // a little more than 50 to account for 1 second tick
+        timeRemaining: (this.state.difficulty + 1), // a little more than 50 to account for 1 second tick
       })
     }
   }
@@ -339,7 +371,7 @@ const styles = StyleSheet.create({
   },
   instructions: {
     width: '100%',
-    height: 250,
+    height: 200,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 30,
@@ -362,6 +394,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     borderRadius: 5,
     padding: 15,
+  },
+  difficulty: {
+    alignItems: 'center',
+    backgroundColor: 'lightgrey',
+    justifyContent: 'center',
+    width: '25%',
+    height: 65,
+    borderRadius: 15,
+    margin: 5,
+    borderWidth: 2,
   },
   buttonRow: {
     flexDirection: 'row',
