@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,9 +52,22 @@ const Landing = ({navigation}) => {
 
   const [name, onChangeName] = React.useState('');
   const [diffMod, changeDiff] = React.useState(10); // Let the default difficulty be Easy
-  const [color1, changeColor1] = React.useState('lightgrey');
+  const [color1, changeColor1] = React.useState('black');
   const [color2, changeColor2] = React.useState('lightgrey');
   const [color3, changeColor3] = React.useState('lightgrey');
+
+  navi = (page, name, color, diffMod) => {
+    page = page;
+    name = name;
+    color = color;
+    diffMod = diffMod;
+    // If the Emojigotchi isn't named, send Alert
+    if(name == '') {
+      Alert.alert("Please Name Me", "Don't you love me?");
+    } else {// If the Emojigotchi is named, navigate
+      {navigation.navigate(page, {name: name, color: color, diffMod: diffMod});};
+    }
+  };
 
   return (
     <Pressable style={styles.container} onPress={dismissKeyboard}>
@@ -62,7 +75,7 @@ const Landing = ({navigation}) => {
         <Text style={styles.welcomeText}>Welcome to Emojigotchi!</Text>
       </View>
       <View style={styles.instructions}>
-        <Text style={styles.instText}>To start playing, simply give your Emojigotchi a name, and then select what color you would like it to be!</Text>
+        <Text style={styles.instText}>To start playing, simply give your Emojigotchi a name, choose a difficulty, and then select what color you would like it to be!</Text>
       </View>
       <View style={styles.nameContainer}>
         <TextInput
@@ -101,30 +114,22 @@ const Landing = ({navigation}) => {
       <View style={styles.buttonRow}>
         <Pressable 
           style={styles.greenPress}
-          onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'green', diffMod: diffMod}
-          );}}>
+          onPress={() => {navi('Emojigotchi', name, 'green', diffMod)}}>
           <Text style={styles.colorText}>Green</Text>
         </Pressable>
         <Pressable
           style={styles.bluePress}
-          onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'blue', diffMod: diffMod}
-          );}}>
+          onPress={() => {navi('Emojigotchi', name, 'blue', diffMod)}}>
           <Text style={styles.colorText}>Blue</Text>
         </Pressable>
         <Pressable
           style={styles.redPress}
-          onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'red', diffMod: diffMod}
-          );}}>
+          onPress={() => {navi('Emojigotchi', name, 'red', diffMod)}}>
           <Text style={styles.colorText}>Red</Text>
         </Pressable>
         <Pressable
           style={styles.purplePress}
-          onPress={() => {navigation.navigate('Emojigotchi',
-          {name: name, color: 'purple', diffMod: diffMod}
-          );}}>
+          onPress={() => {navi('Emojigotchi', name, 'purple', diffMod)}}>
           <Text style={styles.colorText}>Purple</Text>
         </Pressable>
       </View>
@@ -379,7 +384,7 @@ const styles = StyleSheet.create({
   instText: {
     textAlign: 'center',
     fontSize: 20,
-    lineHeight: 40,
+    lineHeight: 30,
   },
   nameContainer: {
     width: '100%',
